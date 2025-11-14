@@ -16,21 +16,21 @@ public class EmailService
         password = smtpSettings.Password;
     }
 
-    public void SendEmail(string destEmail, string subject, string body)
+    public async Task SendEmail(string destEmail, string subject, string body)
     {
         try
         {
-            SmtpClient client = new SmtpClient(host, port);
+            using SmtpClient client = new SmtpClient(host, port);
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(username, password);
 
-            MailMessage mail = new MailMessage();
+            using MailMessage mail = new MailMessage();
             mail.From = new MailAddress(username);
             mail.To.Add(destEmail);
             mail.Subject = subject;
             mail.Body = body;
 
-            client.Send(mail);
+            await client.SendMailAsync(mail);
             Console.WriteLine("E-mail enviado com sucesso!");
         }catch(Exception e)
         {

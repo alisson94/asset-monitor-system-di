@@ -28,7 +28,7 @@ class Program
 
         if(sell_price <= buy_price)
         {
-            Console.WriteLine($"ERRO: Preco de venda ({sell_price}) menor ou igual ao preco de compra ({buy_price})");
+            Console.WriteLine($"ERRO: Preco de venda R$({sell_price:F2}) menor ou igual ao preco de compra R$({buy_price:F2})");
             return;
         }
 
@@ -71,6 +71,8 @@ class Program
         
         AssetPriceService assetPriceService = new AssetPriceService(client);
 
+        int delay = config.GetValue<int>("TimeoutBrapi");
+        
         while (true)
         {
             try
@@ -81,7 +83,10 @@ class Program
                 if (current_price == 0)
                 {
                     Console.WriteLine("Não foi possivel achar o valor desse ativo");
-                    return;
+                    Console.WriteLine("Tentando novamente...");
+                    await Task.Delay(delay);
+                    continue;
+                    
                 }
 
                 if(current_price < buy_price)
@@ -91,7 +96,8 @@ class Program
                     Console.WriteLine($"Enviando e-mail para {destEmail}...");
 
                     decimal diff = Math.Round((buy_price - current_price) / buy_price * 100, 2);
-                    emailService.SendEmail(destEmail, $"Alerta de Compra ({asset})", $"{asset} está com valor R$ {current_price:F2}. {diff}% menor que R$ {buy_price:F2}.");
+                    await emailService.SendEmail(destEmail, $"Alerta de Compra ({asset})", $"{asset} está com valor R$ {current_price:F2}. {diff}% menor que R$ {buy_price:F2}.");
+                
 
                 }else if(current_price > sell_price)
                 {
@@ -100,7 +106,7 @@ class Program
                     Console.WriteLine($"Enviando e-mail para {destEmail}...");
 
                     decimal diff = Math.Round((current_price - sell_price)/ sell_price * 100, 2);
-                    emailService.SendEmail(destEmail, $"Alerta de Venda ({asset})", $"{asset} está com valor R$ {current_price:F2}. {diff}% maior que R$ {sell_price:F2}.");
+                    await emailService.SendEmail(destEmail, $"Alerta de Venda ({asset})", $"{asset} está com valor R$ {current_price:F2}. {diff}% maior que R$ {sell_price:F2}.");
 
                 }
                 else
@@ -108,7 +114,7 @@ class Program
                     Console.WriteLine($"Preco atual: R$ {current_price:F2}");
                 }
 
-                await Task.Delay(10000);
+                await Task.Delay(delay);
             }catch(Exception e)
             {
                 Console.WriteLine($"Erro durante o loop: {e.Message}");

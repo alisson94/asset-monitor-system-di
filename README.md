@@ -39,6 +39,7 @@ Sistema de monitoramento de preços de ativos da bolsa de valores brasileira (B3
    {
      "DestEmail": "seu-email-destino@email.com",
      "ApiKeyBrapi": "SUA_CHAVE_API_BRAPI",
+     "TimeoutBrapi": 60000,
      "Smtp": {
        "Host": "smtp.gmail.com",
        "Port": 587,
