@@ -1,48 +1,8 @@
-﻿
-
-using System.Net.Http.Json;
-using System.Reflection.Emit;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic;
+﻿using Microsoft.Extensions.Configuration;
 
 class Program
 {
     private static readonly HttpClient client = new HttpClient();
-
-    private static async Task<decimal> CurrentAssetPrice(string asset)
-    {
-        string url = $"https://brapi.dev/api/quote/{asset}";
-        try
-        {
-            BrapiResponse? response = await client.GetFromJsonAsync<BrapiResponse>(url);
-
-            if(response != null)
-            {
-                QuoteResult firstQuote = response.results.First();
-                return firstQuote.regularMarketPrice;
-            }
-
-            Console.WriteLine("Requisção funcioou mas não retornou nenhum dado");
-            return 0;
-        }
-        catch(HttpRequestException e)
-        {
-            Console.WriteLine($"Erro de requisição HTTP: {e.Message}");
-            return 0;
-        }
-        catch(JsonException e)
-        {
-            Console.WriteLine($"Erro ao processar JSON: {e.Message}");
-            return 0;
-        }
-        catch(Exception e)
-        {
-            Console.WriteLine($"Erro inesperado: {e.Message}");
-            return 0;
-        }
-    }
 
     static async Task Main(string[] args)
     {   
@@ -56,13 +16,13 @@ class Program
 
         if (!decimal.TryParse(args[1], out decimal sell_price))
         {
-            Console.WriteLine($"ERRO: entrada <PRECO_VENDA> inválida ");
+            Console.WriteLine($"ERRO: entrada <PRECO_VENDA> inválida");
             return;
         }
 
         if (!decimal.TryParse(args[2], out decimal buy_price))
         {
-            Console.WriteLine($"ERRO: entrada <PRECO_COMPRA> inválida {buy_price}");
+            Console.WriteLine($"ERRO: entrada <PRECO_COMPRA> inválida");
             return;
         }
 
@@ -82,13 +42,13 @@ class Program
             .AddJsonFile("appsettings.json", optional: false);
 
         IConfiguration config = builder.Build();
-
-        string? destEmail = config["DestEmail"];
-
+        
         SmtpSettings smtpSettings = new SmtpSettings();
         config.GetSection("Smtp").Bind(smtpSettings);
 
         EmailService emailService = new EmailService(smtpSettings);
+        
+        string? destEmail = config["DestEmail"];
 
         if (string.IsNullOrEmpty(destEmail))
         {
@@ -97,9 +57,21 @@ class Program
             return;
         }
 
+        Console.WriteLine($"Emails serão enviados para: {destEmail}");
+
+        string? apiBrapiKey = config["ApiKeyBrapi"];
+
+        if (string.IsNullOrWhiteSpace(apiBrapiKey))
+        {
+            Console.WriteLine("ERRO: Chave API Brapi não encontrada.");
+            return;
+        }
+        
+        AssetPriceService assetPriceService = new AssetPriceService(client);
+
         while (true)
         {
-            decimal current_price = await CurrentAssetPrice(asset);
+            decimal current_price = await assetPriceService.CurrentAssetPrice(asset, apiBrapiKey);
 
             if (current_price == 0)
             {
@@ -111,7 +83,7 @@ class Program
                 Console.WriteLine("Alerta de COMPRA!");
                 Console.WriteLine($"Preco atual ({current_price}) menor que o preco de compra ({buy_price})");
                 Console.WriteLine($"Enviando e-mail para {destEmail}...");
-                
+
                 decimal diff = Math.Round((buy_price - current_price) / buy_price * 100, 2);
                 emailService.SendEmail(destEmail, $"Alerta de Compra ({asset})", $"{asset} está com valor {current_price}. {diff}% menor que {buy_price}.");
 

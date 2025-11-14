@@ -1,7 +1,5 @@
 using System.Net;
 using System.Net.Mail;
-using System.Net.NetworkInformation;
-using Microsoft.Extensions.Configuration;
 
 public class EmailService
 {
