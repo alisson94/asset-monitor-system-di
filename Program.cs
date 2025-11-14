@@ -101,7 +101,7 @@ class Program
                 {   
                     Console.WriteLine("Alerta de COMPRA!");
                     Console.WriteLine($"Preco atual (R$ {current_price:F2}) menor que o preco de compra (R$ {buy_price:F2})\n");
-                    Console.WriteLine($"Enviando e-mail para {destEmail}...");
+                    Console.WriteLine($"Enviando e-mail para {destEmail}...\n");
 
                     decimal diff = Math.Round((buy_price - current_price) / buy_price * 100, 2);
                     await emailService.SendEmail(destEmail, $"Alerta de Compra ({asset})", $"{asset} está com valor R$ {current_price:F2}. {diff}% menor que R$ {buy_price:F2}.");
