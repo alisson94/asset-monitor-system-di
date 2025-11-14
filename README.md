@@ -108,13 +108,13 @@ Cada alerta envia um e-mail automático com:
 ```
 asset-monitor-system-di/
 │
-├── Program.cs              # Ponto de entrada e lógica principal
-├── AssetPriceService.cs    # Serviço de consulta de preços (API Brapi)
-├── EmailService.cs         # Serviço de envio de e-mails
-├── BrapiResponseModel.cs   # Modelo de resposta da API Brapi
-├── QuoteResultModel.cs     # Modelo de dados de cotação
-├── SmtpSettings.cs         # Modelo de configurações SMTP
-├── appsettings.json        # Arquivo de configuração
+├── Program.cs                    # Ponto de entrada e lógica principal
+├── AssetPriceService.cs          # Serviço de consulta de preços (API Brapi)
+├── EmailService.cs               # Serviço de envio de e-mails
+├── BrapiResponseModel.cs         # Modelo de resposta da API Brapi
+├── QuoteResultModel.cs           # Modelo de dados de cotação
+├── SmtpSettings.cs               # Modelo de configurações SMTP
+├── appsettings.template.json     # Template do arquivo de configuração
 └── asset-monitor-system-di.csproj
 ```
 
