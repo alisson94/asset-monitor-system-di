@@ -17,11 +17,11 @@ public class AssetPriceService
         try
         {   
 
-            BrapiResponse? response = await httpClient.GetFromJsonAsync<BrapiResponse>(url);
+            BrapiResponseModel? response = await httpClient.GetFromJsonAsync<BrapiResponseModel>(url);
 
             if(response != null)
             {
-                QuoteResult firstQuote = response.results.First();
+                QuoteResultModel firstQuote = response.results.First();
                 return firstQuote.regularMarketPrice;
             }
 

@@ -1,0 +1,1 @@
+public record class BrapiResponseModel(List<QuoteResultModel> results);

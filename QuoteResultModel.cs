@@ -1,0 +1,1 @@
+public record class QuoteResultModel(string symbol, decimal regularMarketPrice);
