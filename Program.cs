@@ -88,16 +88,15 @@ class Program
             {
                 decimal current_price = await assetPriceService.CurrentAssetPrice(asset, apiBrapiKey);
 
-                Console.WriteLine("\n==============================================\n");
                 if (current_price == 0)
                 {
-                    Console.WriteLine("Não foi possivel achar o valor desse ativo");
-                    Console.WriteLine("Tentando novamente...");
-                    await Task.Delay(delay);
-                    continue;
+                    Console.WriteLine("Não foi possivel achar o valor desse ativo.");
+                    return;
                     
                 }
 
+                Console.WriteLine("\n==============================================\n");
+                
                 if(current_price < buy_price)
                 {   
                     Console.WriteLine("Alerta de COMPRA!");
