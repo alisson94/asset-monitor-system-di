@@ -70,9 +70,18 @@ class Program
         }
         
         AssetPriceService assetPriceService = new AssetPriceService(client);
-
-        int delay = config.GetValue<int>("TimeoutBrapi");
         
+        int delay;
+        try
+        {
+            delay = config.GetValue<int>("TimeoutBrapi", 60000);
+        }
+        catch (Exception)
+        {
+            Console.WriteLine($"Erro: 'TimeoutBrapi' inválido.");
+            return;
+        }
+
         while (true)
         {
             try
